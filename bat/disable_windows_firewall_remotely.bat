@@ -1,0 +1,1 @@
+psexec \\workstation netsh firewall set opmode disable
