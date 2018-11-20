@@ -32,7 +32,7 @@ namespace ST_596dabba1c094a90a8b17d4767b50a31.csproj
 
             sqlConn = new System.Data.SqlClient.SqlConnection();
 
-            sqlConn.ConnectionString = "Data Source=rxsql01;Initial Catalog=msdb;Integrated Security=True;";
+            sqlConn.ConnectionString = "Data Source=sqlserver;Initial Catalog=msdb;Integrated Security=True;";
             sqlConn.Open();
 
             string fileName = "";
