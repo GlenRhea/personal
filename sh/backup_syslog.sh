@@ -19,7 +19,7 @@ error_exit()
 cmd=$(gzip -9c /var/log/syslog.1 > /root/syslog_backup/syslog_backup-$filedate.gz 2>&1) || error_exit "Error on line number $LINENO: $cmd!"
 cmd=$(gzip -9c /var/log/auth.log.1 > /root/syslog_backup/authlog_backup-$filedate.gz 2>&1) || error_exit "Error on line number $LINENO: $cmd!"
 
-#copy to rxfp01 for archive
+#copy to server for archive
 #you have to mount the share before you can write to it rather than just copying directly to it /rolleyes
 cmd=$(mount -t cifs -o username=user,password=Password1,domain=domain //server/UserData$/ /root/tmp/mnt 2>&1) || error_exit "Error on line number $LINENO: $cmd!"
 #copy the files over
@@ -36,7 +36,7 @@ cmd=$(find . -mindepth 1 -mtime +30 -delete 2>&1) || error_exit "Error on line n
 #log to syslog
 /usr/bin/logger "Syslog backup complete!"
 
-#load logs to rxdevsql01
+#load logs to sql server
 #copy to tmp dir
 #cmd=$(cp /var/log/syslog.1 /root/tmp/ 2>&1) || error_exit "Error on line number $LINENO: $cmd!"
 #cmd=$(cp /var/log/auth.log.1 /root/tmp/ 2>&1) || error_exit "Error on line number $LINENO: $cmd!"
