@@ -1,0 +1,555 @@
+
+<!doctype html>
+<html>
+<!-- Character Viewer Form -->
+<!-- Example URLs
+http://us.battle.net/wow/en/character/quel'thalas/maldroks/advanced
+http://us.battle.net/wow/en/character/quel'thalas/maldroks/simple
+so:
+http://us.battle.net/wow/en/character/server/character/advanced
+-->
+<title>WoW Tools</title>
+<head>
+<link href="css/dark-hive/jquery-ui.min.css" rel="stylesheet">
+<script src="jquery-min.js"></script>
+<script src="jquery-ui-1.10.4.custom.min.js"></script>
+<script type="text/javascript" src="//wow.zamimg.com/widgets/power.js"></script>
+<script>var wowhead_tooltips = { "colorlinks": true, "iconizelinks": true, "renamelinks": true }</script>
+      <style>
+	body{
+		font: 80% "Trebuchet MS", sans-serif;
+		margin: 50px;
+		background-color:#C0C0C0;
+	}
+	.demoHeaders {
+		margin-top: 2em;
+	}
+	#dialog-link {
+		padding: .4em 1em .4em 20px;
+		text-decoration: none;
+		position: relative;
+	}
+	#dialog-link span.ui-icon {
+		margin: 0 5px 0 0;
+		position: absolute;
+		left: .2em;
+		top: 50%;
+		margin-top: -8px;
+	}
+	#icons {
+		margin: 0;
+		padding: 0;
+	}
+	#icons li {
+		margin: 2px;
+		position: relative;
+		padding: 4px 0;
+		cursor: pointer;
+		float: left;
+		list-style: none;
+	}
+	#icons span.ui-icon {
+		float: left;
+		margin: 0 4px;
+	}
+	.fakewindowcontain .ui-widget-overlay {
+		position: absolute;
+	}
+	h1 {text-align:center}
+	
+	#protip {
+	  width: 400px ;
+	  margin-left: auto ;
+	  margin-right: auto ;
+	}
+	</style>
+</head>
+<body>
+<h1>WoW Tools</h1>
+<div id="protip">(ProTip: You can hover over items to see more info about them)</div>
+<hr>
+<br /><br />
+<h3>Toon Lookup</h3>
+<hr>
+  Type the character's name: <input type="text" id="toon" title="enter a valid toon name">
+  Realm: <input id="realm" title="type the name of the realm">Advanced <input type="checkbox" id="adv" >
+  <input type="submit" id="btnToonSearch" value="Submit">
+  <input type="submit" id="btnToonSearchClear" value="Clear">
+<br /><br />
+<div id="link"></div>
+<br />
+
+<h3>Quest Lookup</h3>
+<hr>
+  Type the character's name: <input type="text" id="questtoon" title="enter a valid toon name">
+  Quest number: <input type="text" id="questnum">
+  Realm: <input id="questrealm" title="type the name of the realm">
+  <input type="submit" id="btnQuestSearch" value="Submit">
+  <input type="submit" id="btnQuestSearchClear" value="Clear">
+<br /><br />
+<div id="questdiv">HINT! You can get the quest number from wowhead: http://www.wowhead.com/quest=<b><u>27355</u></b></div>
+<br />
+
+<h3>Title Lookup</h3>
+<hr>
+  Type the character's name: <input type="text" id="titletoon" title="enter a valid toon name">
+  Realm: <input id="titlerealm" title="type the name of the realm">
+  <input type="submit" id="btnTitleSearch" value="Submit">
+  <input type="submit" id="btnTitleSearchClear" value="Clear">
+<br /><br />
+<div id="titlesdiv"></div>
+<br />
+
+<h3>Server Status</h3>
+<hr>
+  Realm: <input id="inputRealmStatus" title="type the name of the realm">
+  <input type="submit" id="btnRealmStatusSearch" value="Submit">
+  <input type="submit" id="btnRealmStatusClear" value="Clear">
+<br /><br />
+<span id="realmname" ></span><span id="RealmStatusDiv"></span>
+<br />
+
+<h3>My Characters <input type="submit" id="showMyData" value="Show"><input type="submit" id="hideMyData" value="Toggle"></h3>
+<hr>
+<div id="myToons">
+<a href="http://us.battle.net/wow/en/status">Alliance</a> (<span id="Turalyon" title="unknown population">Turalyon</span>)<br />
+<div id="myalliancetoons"></div><br />
+<a href="http://us.battle.net/wow/en/status">Horde</a> (<span id="Arthas" title="unknown population">Arthas</span>)<br />
+<div id="myhordetoons"></div><br />
+</div>
+<br /><br />
+<div style='text-align: right;position: fixed;z-index:9999999;bottom: 0; width: 100%;cursor: pointer;line-height: 0;display:block !important;'><a title="Hosted on free web hosting 000webhost.com. Host your own website for FREE." target="_blank" href="https://www.000webhost.com/?utm_source=000webhostapp&amp;utm_campaign=000_logo&amp;utm_medium=website_wowcharacterviewer&amp;utm_content=footer_img"><img src="https://cdn.rawgit.com/000webhost/logo/e9bd13f7/footer-powered-by-000webhost-white2.png"  alt="www.000webhost.com"></a></div></body>
+<script type="text/javascript">
+$( document ).ready(function() {
+	//hide the myToons div
+	$("#myToons").hide();
+	
+	//setup tooltips
+	$( document ).tooltip({ 
+		hide: { effect: "fade", duration: 1000 },
+		events: {
+			input: "mouseenter,mouseleave"
+		}
+	});
+	
+	//check for URL parameters
+	var urlParams = false;
+	var action = GetURLParameter('action');
+	//console.log(action);
+	switch(action) {
+			case "toonlookup":
+				toonLookup(true);
+				break;
+			case 0:
+				status = "Idle";
+				break;
+			case 1:
+				status = "Populating";
+				break;
+			case 2:
+				status = "Active";
+				break;
+			case 3:
+				status = "Concluded";
+				break;
+			default:
+				//default code block
+		}
+	//~ var toon = GetURLParameter('toon');
+	//~ var realm = GetURLParameter('realm');
+	//~ var quest = GetURLParameter('quest');
+	
+	//create my own character links
+	var arrarthas=new Array("fullabull","gubo","grayle","kirrilian","noobrez","lokrok","saniell","haidin","bammax","renraki","dacollin");
+	var arrstormrage=new Array("vaeleron","miningtoon","haidindk","gadorac","nitr?","beardray","wereclaws","tellatubby","beenapally","b?n?","toredge");
+	var classes=new Array("Warrior","Paladin","Hunter","Rogue","Priest","Death Knight","Shaman","Mage","Warlock","Monk","Druid");	
+	
+	//globals
+	var $btnToonSearch=$("#btnToonSearch");
+	var $btnToonSearchClear=$("#btnToonSearchClear");
+	var $btnTitleSearch=$("#btnTitleSearch");
+	var $btnTitleSearchClear=$("#btnTitleSearchClear");
+	var $btnQuestSearch=$("#btnQuestSearch");
+	var $btnQuestSearchClear=$("#btnQuestSearchClear");
+	var $btnRealmStatusSearch=$("#btnRealmStatusSearch");
+	var $btnRealmStatusClear=$("#btnRealmStatusClear");
+	var $showMyData=$("#showMyData");
+	var $hideMyData=$("#hideMyData");
+	
+	//api key
+	var apikey='&apikey=3van532xktmagphtvj282vj4dh7z5e8n';
+	
+	//realm lookup array
+	var realms = ["Aegwynn","Aerie Peak","Agamaggan","Aggramar","Akama","Alexstrasza","Alleria","Altar of Storms",
+			"Alterac Mountains","Aman'Thul","Andorhal","Anetheron","Antonidas","Anub'arak","Anvilmar","Arathor",
+			"Archimonde","Area 52","Argent Dawn","Arthas","Arygos","Auchindoun","Azgalor","Azjol-Nerub",
+			"Azralon","Azshara","Azuremyst","Baelgun","Balnazzar","Barthilas","Black Dragonflight","Blackhand",
+			"Blackrock","Blackwater Raiders","Blackwing Lair","Blade's Edge","Bladefist","Bleeding Hollow",
+			"Blood Furnace","Bloodhoof","Bloodscalp","Bonechewer","Borean Tundra","Boulderfist","Bronzebeard",
+			"Burning Blade","Burning Legion","Caelestrasz","Cairne","Cenarion Circle","Cenarius","Cho'gall",
+			"Chromaggus","Coilfang","Crushridge","Daggerspine","Dalaran","Dalvengyr","Dark Iron","Darkspear",
+			"Darrowmere","Dath'Remar","Dawnbringer","Deathwing","Demon Soul","Dentarg","Destromath",
+			"Dethecus","Detheroc","Doomhammer","Draenor","Dragonblight","Dragonmaw","Drak'Tharon",
+			"Drak'thul","Draka","Drakkari","Dreadmaul","Drenden","Dunemaul","Durotan","Duskwood",
+			"Earthen Ring","Echo Isles","Eitrigg","Eldre'Thalas","Elune","Emerald Dream","Eonar","Eredar",
+			"Executus","Exodar","Farstriders","Feathermoon","Fenris","Firetree","Fizzcrank","Frostmane",
+			"Frostmourne","Frostwolf","Galakrond","Gallywix","Garithos","Garona","Garrosh","Ghostlands",
+			"Gilneas","Gnomeregan","Goldrinn","Gorefiend","Gorgonnash","Greymane","Grizzly Hills","Gul'dan",
+			"Gundrak","Gurubashi","Hakkar","Haomarush","Hellscream","Hydraxis","Hyjal","Icecrown",
+			"Illidan","Jaedenar","Jubei'Thos","Kael'thas","Kalecgos","Kargath","Kel'Thuzad","Khadgar",
+			"Khaz Modan","Khaz'goroth","Kil'jaeden","Kilrogg","Kirin Tor","Korgath","Korialstrasz","Kul Tiras",
+			"Laughing Skull","Lethon","Lightbringer","Lightning's Blade","Lightninghoof","Llane","Lothar",
+			"Madoran","Maelstrom","Magtheridon","Maiev","Mal'Ganis","Malfurion","Malorne","Malygos",
+			"Mannoroth","Medivh","Misha","Mok'Nathal","Moon Guard","Moonrunner","Mug'thol","Muradin",
+			"Nagrand","Nathrezim","Nazgrel","Nazjatar","Nemesis","Ner'zhul","Nesingwary","Nordrassil",
+			"Norgannon","Onyxia","Perenolde","Proudmoore","Quel'dorei","Quel'Thalas","Ragnaros","Ravencrest",
+			"Ravenholdt","Rexxar","Rivendare","Runetotem","Sargeras","Saurfang","Scarlet Crusade","Scilla",
+			"Sen'jin","Sentinels","Shadow Council","Shadowmoon","Shadowsong","Shandris","Shattered Halls",
+			"Shattered Hand","Shu'halo","Silver Hand","Silvermoon","Sisters of Elune","Skullcrusher","Skywall",
+			"Smolderthorn","Spinebreaker","Spirestone","Staghelm","Steamwheedle Cartel","Stonemaul","Stormrage",
+			"Stormreaver","Stormscale","Suramar","Tanaris","Terenas","Terokkar","Thaurissan","The Forgotten Coast",
+			"The Scryers","The Underbog","The Venture Co","Thorium Brotherhood","Thrall","Thunderhorn",
+			"Thunderlord","Tichondrius","Tol Barad","Tortheldrin","Trollbane","Turalyon","Twisting Nether",
+			"Uldaman","Uldum","Undermine","Ursin","Uther","Vashj","Vek'nilash","Velen","Warsong","Whisperwind",
+			"Wildhammer","Windrunner","Winterhoof","Wyrmrest Accord","Ysera","Ysondre","Zangarmarsh",
+			"Zul'jin","Zuluhed"];
+			
+	//initialize the realm autocomplete input boxes
+	$( "#realm" ).autocomplete({
+			source: realms
+		});
+	$( "#questrealm" ).autocomplete({
+			source: realms
+		});
+	$( "#titlerealm" ).autocomplete({
+			source: realms
+		});
+	$( "#inputRealmStatus" ).autocomplete({
+			source: realms
+		});
+
+	//Hide MyToons
+	$hideMyData.click(function() {
+		$("#myToons").toggle();
+	});
+	$showMyData.click(function() {
+		$(this).hide();
+		$("#myToons").show();
+		//horde
+		arrarthas.sort();
+		$("#myhordetoons").append("<table><tr>");
+		for (var i = 0; i < arrarthas.length; i++) {
+			var hordetoon = encodeURIComponent((arrarthas[i]));
+			var statsURL = "https://us.api.battle.net/wow/character/arthas/" + hordetoon + "?fields=stats,items&jsonp=?&callback=?" + apikey;
+			$.getJSON(statsURL, function(data) {
+				var thumbnail = "https://render-us.worldofwarcraft.com/character/" + data.thumbnail;
+				var level = data.level;
+				var name = data.name;
+				var avgiLvl = data.items.averageItemLevel;
+				var chrClass = data.class;
+				chrCLass = classes[chrClass - 1];
+				var url = "https://worldofwarcraft.com/en-us/character/arthas/"+ name;
+				$("#myhordetoons").append("<td><a target=\"_blank\" href=\"" + url + "\"><img src=\"" + thumbnail + "\" title=\"" + chrCLass + " (i" +avgiLvl + ")\"><br /> " + name + " (" +level + ") </a></td><td>&nbsp&nbsp&nbsp<br /></td>");
+			});
+		}
+		$("#myhordetoons").append("</tr></table>");
+		
+		//alliance
+		arrstormrage.sort();
+		$("#myalliancetoons").append("<table><tr>");
+		for (var i = 0; i < arrstormrage.length; i++) {
+			var allytoon = encodeURIComponent((arrstormrage[i]));
+			var statsURL = "https://us.api.battle.net/wow/character/turalyon/" + allytoon + "?fields=stats,items&jsonp=?&callback=?" + apikey;
+			$.getJSON(statsURL, function(data) {
+				var thumbnail = "https://render-us.worldofwarcraft.com/character/" + data.thumbnail;
+				var level = data.level;
+				var name = data.name;
+				var avgiLvl = data.items.averageItemLevel;
+				var chrClass = data.class;
+				chrCLass = classes[chrClass - 1];
+				var url = "https://worldofwarcraft.com/en-us/character/turalyon/"+ name;
+				//$("#myalliancetoons").append("<a target=\"_blank\" href=\"" + url + "\"><img src=\"" + thumbnail + "\" title=\"" + name + " (" +level + ")\"></a>");
+				$("#myalliancetoons").append("<td><a target=\"_blank\" href=\"" + url + "\"><img src=\"" + thumbnail + "\" title=\"" + chrCLass + " (i" +avgiLvl + ")\"><br /> " + name + " (" +level + ") </a></td><td>&nbsp&nbsp&nbsp<br /></td>");
+			});
+		}
+		$("#myalliancetoons").append("</tr></table>");
+		
+		
+		realmStatus("Arthas");
+		realmStatus("Turalyon");
+		function realmStatus(realmselect){
+			var realmstatus = false;
+			var population = '';
+			var realmtype = '';
+			var realmspan = $("#" + realmselect); 
+			var statsURL = "https://us.api.battle.net/wow/realm/status?realm=" + realmselect + "&jsonp=?&callback=?" + apikey;
+			$.ajax({
+				url: statsURL,
+				timeout: 4000, // 2 seconds timeout
+				async: false,
+				dataType: "json",
+				success: function(data){
+					population = data.realms[0].population;
+					realmstatus = data.realms[0].status;
+					realmtype = data.realms[0].type;
+					if (realmstatus) {
+						realmspan.css("color","green");
+						//realmspan.prop('title',population + ' pop');
+						realmspan.prop('title', realmtype + " server, " + population + " population");
+					} else {
+						realmspan.css("color","red");
+					}
+				},
+				error: function(data){
+					$("#link").html("There was an error! It is possible the toon name or server is wrong, or the API servers are down.");
+				}
+			});
+		}
+	});
+	
+	//Toon Search
+	$btnToonSearchClear.click(function() {
+		$("#link").empty(); 
+		$("#toon").val(''); 
+		$("#adv").removeAttr('checked'); 
+		$("#realm").val(''); 
+	});
+	$btnToonSearch.click(function(){toonLookup(false);});
+	function toonLookup(urlParams){
+		if (urlParams) { //get url params, otherwise use form data
+			var toon = GetURLParameter('toon');
+			var realm = GetURLParameter('realm');
+			detail = 'advanced';
+		} else {
+			var toonObj = $("#toon");
+			var toon = toonObj.val();
+			var realm = $("#realm").val();
+			var adv = $("#adv");
+			var detail = "";
+			if ($('#adv').is(':checked')) {
+				detail = 'advanced';
+			} else {
+				detail = 'simple';
+			}	
+		}
+		
+		if (toon != "") {
+			var statsURL = "https://us.api.battle.net/wow/character/" + realm + "/" + toon + "?fields=stats,items&jsonp=?&callback=?" + apikey;
+			$("#link").html("Accessing the WoW API, please wait...");
+			$.ajax({
+				url: statsURL,
+				timeout: 4000, // 2 seconds timeout
+				dataType: "json",
+				success: function(data){
+					var thumbnail = "https://render-us.worldofwarcraft.com/character/" + data.thumbnail;
+					var level = data.level;
+					var name = data.name;
+					var avgiLvl = data.items.averageItemLevel;
+					var chrClass = data.class;
+					chrCLass = classes[chrClass - 1];
+					var url = "https://worldofwarcraft.com/en-us/character/" + realm + "/"+ name;
+					$("#link").html("<a target=\"_blank\" href=\"" + url + "\"><img src=\"" + thumbnail + "\" title=\"" + chrCLass + " (i" +avgiLvl + ")\"><br /> " + name + " (" +level + ") </a></td><td>&nbsp&nbsp&nbsp<br />");
+				},
+				error: function(data){
+					$("#link").html("There was an error! It is possible the toon name or server is wrong, or the API servers are down.");
+				}
+			});
+		} else {
+			$("#link").html("Would you please enter a toon name?")	
+		}
+	}
+	
+	//Title Search
+	$btnTitleSearchClear.click(function() {
+		$("#titlesdiv").empty();
+		$("#titletoon").val(''); 
+		$("#titlerealm").val(''); 
+	});
+	$btnTitleSearch.click(function(){toontitleLookup();});
+	function toontitleLookup(){
+		var toon = $("#titletoon");
+		var realm = $("#titlerealm").val();
+		var titleOut = "";
+		if (toon.val() != "") {
+			var statsURL = "https://us.api.battle.net/wow/character/" + realm + "/" + toon.val() + "?fields=titles&jsonp=?&callback=?" + apikey;
+			$("#titlesdiv").html("Accessing the WoW API, please wait...");
+			$.ajax({
+				url: statsURL,
+				timeout: 4000, // 2 seconds timeout
+				dataType: "json",
+				success: function(data){
+					var titles = data.titles;
+					var toonname = data.name;
+					for (var i = 0; i < titles.length; i++) {
+						var chrTitle = "<a target=\"_blank\" href=\"http://www.wowhead.com/title=" + titles[i].id + "\">" +  titles[i].name + "</a><br />";
+						chrTitle = chrTitle.replace("%s", toonname);
+						//console.log(chrTitle);
+						titleOut = titleOut + chrTitle;
+					}
+					$("#titlesdiv").html(titleOut);
+				},
+				error: function(data){
+					$("#titlesdiv").html("There was an error! It is possible the toon name or server is wrong, or the API servers are down.");
+				}
+			});
+		} else {
+			$("#titlesdiv").html("Would you please enter a toon name?")	
+		}
+	}
+	
+	//Quest Search
+	$btnQuestSearchClear.click(function() {
+		$("#questdiv").empty();
+		$("#questtoon").val(''); 
+		$("#questnum").val(''); 
+		$("#questrealm").val(''); 
+	});
+	$btnQuestSearch.click(function(){questLookup();});
+	function questLookup(){
+		var toon = $("#questtoon");
+		var realm = $("#questrealm").val();
+		var questnum = $("#questnum");
+		var QuestCompleted = false;
+		var totalQuests = 0;
+		var toonname = '';
+		if (toon.val() != "") {
+			var statsURL = "https://us.api.battle.net/wow/character/" + realm + "/" + toon.val() + "?fields=quests&jsonp=?&callback=?" + apikey;
+			$("#questdiv").html("Accessing the WoW API, please wait...");
+			$.ajax({
+				url: statsURL,
+				timeout: 4000, // 2 seconds timeout
+				dataType: "json",
+				success: function(data){
+					var quests = data.quests;
+					toonname = data.name;
+					totalQuests = quests.length;
+					for (var i = 0; i < quests.length; i++) {
+						if  (parseInt(quests[i]) == parseInt(questnum.val())) {
+							QuestCompleted = true;
+						}
+					}
+					if (QuestCompleted) {
+						$("#questdiv").html(toonname + " has completed " + totalQuests + " quests and <a href=\"http://www.wowhead.com/quest=" + questnum.val() + " \" target=\"_blank\">" + questnum.val() + "</a> is one of them.");
+					} else {
+						$("#questdiv").html(toonname + " has completed " + totalQuests  + " quests but <a href=\"http://www.wowhead.com/quest=" + questnum.val() + "\" target=\"_blank\">" + questnum.val() + "</a> is <b><u>NOT</u></b> one of them.");
+					}
+				},
+				error: function(data){
+					$("#questdiv").html("There was an error! It is possible the toon name or server is wrong, or the API servers are down.");
+				}
+			});
+		} else {
+			$("#questdiv").html("Would you please enter a toon name?")	
+		}
+	}
+	
+	//Realm Status
+	$btnRealmStatusClear.click(function() {
+		$("#RealmStatusDiv").empty();
+		$("#realmname").empty();
+		$("#realmname").css("color","black");
+		$("#inputRealmStatus").val(''); 
+	});
+	$btnRealmStatusSearch.click(function(){realmstatusLookup();});
+	function realmstatusLookup(){
+		var realmstatus = false;
+		var population = '';
+		var name = '';
+		var battlegroup = '';
+		var tz = '';
+		var realmtype = '';
+		var realm = $("#inputRealmStatus").val();
+		var realmDiv = $("#RealmStatusDiv");
+		var realmName = $("#realmname");
+		var statsURL = "https://us.api.battle.net/wow/realm/status?realm=" + realm  + "&jsonp=?&callback=?" + apikey;
+		realmDiv.css("color","black");
+		realmDiv.html("Accessing the WoW API, please wait...");
+		$.ajax({
+			url: statsURL,
+			timeout: 4000, // 2 seconds timeout
+			async: false,
+			dataType: "json",
+			success: function(data){
+				population = data.realms[0].population;
+				realmstatus = data.realms[0].status;
+				name = data.realms[0].name;
+				realmtype = data.realms[0].type;
+				battlegroup = data.realms[0].battlegroup;
+				tz = data.realms[0].timezone;
+				if (realmstatus) {
+					realmName.css("color","green");
+					realmName.prop('title', realmtype + " server, " + population + " population");
+					realmName.html(name);
+					realmDiv.html(" is online and in the " + battlegroup + " battlegroup");
+					realmDiv.append(battlegroundStatus("Tol Barad", data.realms[0]['tol-barad']['status'], data.realms[0]['tol-barad']['next'], data.realms[0]['tol-barad']['controlling-faction']))
+					realmDiv.append(battlegroundStatus("Wintergrasp", data.realms[0]['wintergrasp']['status'], data.realms[0]['wintergrasp']['next'], data.realms[0]['wintergrasp']['controlling-faction']))
+				} else {
+					realmName.css("color","red");
+					realmDiv.html(name + ' is offline.');
+				}
+			},
+			error: function(data){
+				realmDiv.html("There was an error! It is possible server is wrong, or the API servers are down.");
+			}
+		});
+	}
+	
+	function battlegroundStatus(bgname, status, nexttime, faction) {
+		//set bg status
+		switch(status) {
+			case -1:
+				status = "Unknown";
+				break;
+			case 0:
+				status = "Idle";
+				break;
+			case 1:
+				status = "Populating";
+				break;
+			case 2:
+				status = "Active";
+				break;
+			case 3:
+				status = "Concluded";
+				break;
+			default:
+				//default code block
+		}
+		if (status == "Idle") {
+			var strReturn = '';
+			var datenow = new Date();
+			var timenow = datenow.getTime();
+			var difference_ms = nexttime - timenow;
+			difference_ms = difference_ms/1000;
+			var seconds = Math.floor(difference_ms % 60);
+			difference_ms = difference_ms/60; 
+			var minutes = Math.floor(difference_ms % 60);
+			difference_ms = difference_ms/60; 
+			var hours = Math.floor(difference_ms % 24); 
+			if (faction == 0) {
+				strReturn = "<br />" + bgname + " is owned by the <span style=\"color:blue\">Alliance</span> and will start again in " + hours + " hour(s) and " + minutes + " minutes.";
+			} else {
+				strReturn = "<br />" + bgname + " is owned by the <span style=\"color:red\">Horde</span> and will start again in " + hours + " hour(s) and " + minutes + " minutes.";
+			}
+		} else {
+			strReturn = "<br />" + bgname + " is " + status + ".";
+		}
+		return strReturn;
+	}
+	
+	function GetURLParameter(sParam)
+	{
+		var sPageURL = window.location.search.substring(1);
+		var sURLVariables = sPageURL.split('&');
+		for (var i = 0; i < sURLVariables.length; i++) 
+		{
+			var sParameterName = sURLVariables[i].split('=');
+			if (sParameterName[0] == sParam) 
+			{
+				return sParameterName[1];
+			}
+		}
+	}
+});
+</script>
+</html>
