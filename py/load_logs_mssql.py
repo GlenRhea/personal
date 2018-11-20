@@ -8,7 +8,7 @@ import re
 p = re.compile('^[A-Z][a-z]*\s*[0-9]*\s[0-9]*:[0-9]*:[0-9]*\s')
 
 #conn = pymssql.connect(server, user, password, "tempdb")
-conn = pymssql.connect(host='RxDevSQL01', user='nagiosuser', password='Password1', database='rxadmin')
+conn = pymssql.connect(host='server', user='user', password='password', database='db')
 cursor = conn.cursor()
 #create table
 #cursor.execute("""
