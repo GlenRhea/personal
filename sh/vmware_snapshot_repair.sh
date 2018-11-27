@@ -59,6 +59,6 @@ echo "Task completed."
 
 #delete the files after the snapshot removal is complete
 echo "Moving all the leftover delta files to a tmp folder."
-if [ -f "tmp" ]; then mkdir tmp fi
+mkdir -p tmp
 mv *000* tmp
 echo "Task completed."
