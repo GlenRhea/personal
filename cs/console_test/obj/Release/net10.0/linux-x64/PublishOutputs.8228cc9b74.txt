@@ -1,0 +1,2 @@
+/home/glenrhea/Documents/code/personal/personal/cs/console_test/bin/Release/net10.0/linux-x64/publish/console_test.pdb
+/home/glenrhea/Documents/code/personal/personal/cs/console_test/bin/Release/net10.0/linux-x64/publish/console_test

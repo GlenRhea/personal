@@ -1,0 +1,13 @@
+{
+  "version": 2,
+  "dgSpecHash": "4uPzzNTlF5E=",
+  "success": true,
+  "projectFilePath": "/home/glenrhea/Documents/code/personal/personal/cs/console_test/console_test.csproj",
+  "expectedPackageFiles": [
+    "/home/glenrhea/.nuget/packages/microsoft.net.illink.tasks/10.0.15/microsoft.net.illink.tasks.10.0.15.nupkg.sha512",
+    "/home/glenrhea/.nuget/packages/microsoft.netcore.app.runtime.linux-x64/10.0.15/microsoft.netcore.app.runtime.linux-x64.10.0.15.nupkg.sha512",
+    "/home/glenrhea/.nuget/packages/microsoft.aspnetcore.app.runtime.linux-x64/10.0.15/microsoft.aspnetcore.app.runtime.linux-x64.10.0.15.nupkg.sha512",
+    "/home/glenrhea/.nuget/packages/microsoft.netcore.app.host.linux-x64/10.0.15/microsoft.netcore.app.host.linux-x64.10.0.15.nupkg.sha512"
+  ],
+  "logs": []
+}

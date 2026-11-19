@@ -1,0 +1,15 @@
+/home/glenrhea/Documents/code/personal/personal/cs/console_test/bin/Debug/net10.0/console_test
+/home/glenrhea/Documents/code/personal/personal/cs/console_test/bin/Debug/net10.0/console_test.deps.json
+/home/glenrhea/Documents/code/personal/personal/cs/console_test/bin/Debug/net10.0/console_test.runtimeconfig.json
+/home/glenrhea/Documents/code/personal/personal/cs/console_test/bin/Debug/net10.0/console_test.dll
+/home/glenrhea/Documents/code/personal/personal/cs/console_test/bin/Debug/net10.0/console_test.pdb
+/home/glenrhea/Documents/code/personal/personal/cs/console_test/obj/Debug/net10.0/console_test.GeneratedMSBuildEditorConfig.editorconfig
+/home/glenrhea/Documents/code/personal/personal/cs/console_test/obj/Debug/net10.0/console_test.AssemblyInfoInputs.cache
+/home/glenrhea/Documents/code/personal/personal/cs/console_test/obj/Debug/net10.0/console_test.AssemblyInfo.cs
+/home/glenrhea/Documents/code/personal/personal/cs/console_test/obj/Debug/net10.0/console_test.csproj.CoreCompileInputs.cache
+/home/glenrhea/Documents/code/personal/personal/cs/console_test/obj/Debug/net10.0/console_test.sourcelink.json
+/home/glenrhea/Documents/code/personal/personal/cs/console_test/obj/Debug/net10.0/console_test.dll
+/home/glenrhea/Documents/code/personal/personal/cs/console_test/obj/Debug/net10.0/refint/console_test.dll
+/home/glenrhea/Documents/code/personal/personal/cs/console_test/obj/Debug/net10.0/console_test.pdb
+/home/glenrhea/Documents/code/personal/personal/cs/console_test/obj/Debug/net10.0/console_test.genruntimeconfig.cache
+/home/glenrhea/Documents/code/personal/personal/cs/console_test/obj/Debug/net10.0/ref/console_test.dll
